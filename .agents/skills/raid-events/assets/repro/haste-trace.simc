@@ -1,0 +1,11 @@
+# Учебный encounter overlay для controlled haste series; player stats задать отдельно.
+# Сравни два expanded player профиля, отличающихся только haste.
+# Для trace используй iterations=1 threads=1 debug=1 log=1 в команде.
+fight_style=Patchwerk
+fixed_time=1
+max_time=600
+vary_combat_length=0
+strict_parsing=1
+active_enemies=1
+override.bloodlust=0
+# RPPM mask/BLP/eligible attempts подтверждай кодом и debug; DPS недостаточно.

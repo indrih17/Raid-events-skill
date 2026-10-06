@@ -1,405 +1,70 @@
-# Raid-events-skill
-Я хочу построить максимально реалистичный M+ dungeon route через SimulationCraft Raid Events
-по реальному combat log + MDT/маршруту.
+# Raid Events и SimulationCraft: исследовательская методичка
 
-Считай следующие правила обязательными и используй их по умолчанию.
+Практическое руководство по восстановлению M+ target timeline из combat log и MDT, проверке реализации SimC и сравнению экипировки, эффектов и APL. Здесь одновременно находятся подробная методичка для человека и переносимый Codex skill.
 
-============================================================
-1. ОСНОВНОЙ ПРИНЦИП
-============================================================
+## С чего начать
 
-Raid Events должны моделировать не абстрактный DungeonRoute, а реальный таймлайн конкретного ключа:
+1. Для маршрута: [восстановление лога](.agents/skills/raid-events/references/combat-log-reconstruction.md), затем [моделирование событий](.agents/skills/raid-events/references/event-modeling.md) и [проверка профиля](.agents/skills/raid-events/references/validation.md).
+2. Для странного proc: [методология](.agents/skills/raid-events/references/methodology.md), [уровни доказательности](.agents/skills/raid-events/references/evidence-rules.md), [target selection](.agents/skills/raid-events/references/target-selection.md).
+3. Для Guillotine: [разбор эксперимента](.agents/skills/raid-events/references/case-studies/perfected-guillotine-invulnerable.md).
+4. Для haste/RPPM: [отдельная глава](.agents/skills/raid-events/references/rppm-haste.md).
+5. Для исходных правил: [полная неизменённая копия README](source/original-methodology.md) и [карта сохранения всех 17 разделов](source/provenance.md).
 
-- реальные времена начала/конца пуллов;
-- реальные длительности жизни мобов;
-- реальные spawned adds;
-- реальные boss phases;
-- реальные priority targets;
-- реальные Bloodlust timestamps;
-- реальные простои между пулами.
+## Главные выводы
 
-Основной источник истины:
-1) combat log;
-2) MDT/известный маршрут — для состава первоначальных мобов;
-3) DungeonRoute можно использовать только как вспомогательную информацию, но НЕ считать его автоматически правильным.
+- Combat log задаёт наблюдаемый таймлайн; MDT помогает определить начальный состав. DungeonRoute не заменяет фактические данные.
+- Обычные duration-based adds сохраняют окна жизни, но их HP% синтетический; увеличение DPS не моделирует полноценный вклад игрока в сокращение TTK группы.
+- Invulnerable actor нельзя считать безвредной декорацией: нужно проверять debuffs, target lists, retarget и каждый proc.
+- В эксперименте Perfected Guillotine baseline: 43.662 executions, 87.184 direct results, 10.534M среднего урона. С invulnerable: 43.719, 43.643, 5.200M. Получается примерно 1.997 и 0.998 зарегистрированных direct results на execution.
+- Эти данные доказывают изменение числа зарегистрированных попаданий в предоставленном эксперименте. Они сами по себе не доказывают точную причину, конкретную потерянную цель, ошибку target cap или поведение в игре.
+- DPS, proc attempts, successful procs, executions, direct results и damage — разные величины.
 
-Если combat log и DungeonRoute расходятся, приоритет имеет combat log.
+## Содержание
 
-Ничего не придумывай без данных. Если чего-то нельзя надёжно определить — явно пометь это как неопределённость.
+| Материал | Назначение |
+|---|---|
+| [SKILL.md](.agents/skills/raid-events/SKILL.md) | Короткий рабочий алгоритм и выбор нужной главы |
+| [AGENTS.md](AGENTS.md) | Правила сопровождения этого репозитория |
+| [Методология](.agents/skills/raid-events/references/methodology.md) | От вопроса до проверяемого вывода |
+| [Доказательства](.agents/skills/raid-events/references/evidence-rules.md) | Границы вывода, статистика, альтернативы |
+| [Combat log](.agents/skills/raid-events/references/combat-log-reconstruction.md) | GUID, пуллы, spawned adds, фазы, BL |
+| [Raid events](.agents/skills/raid-events/references/event-modeling.md) | Duration, timestamps, dummy, разбиение событий |
+| [Выбор модели](.agents/skills/raid-events/references/model-limitations.md) | Time-driven и health-driven TTK, execute, party damage |
+| [Target selection](.agents/skills/raid-events/references/target-selection.md) | Callback → target list → cap → impact → stats |
+| [Invulnerable](.agents/skills/raid-events/references/invulnerable-actors.md) | Debuffs, lists, primary target, downtime |
+| [Proc debugging](.agents/skills/raid-events/references/proc-debugging.md) | Driver IDs, callbacks, дочерние actions |
+| [RPPM/haste](.agents/skills/raid-events/references/rppm-haste.md) | Масштабирование, BLP, attempts, контроль переменных |
+| [APL](.agents/skills/raid-events/references/apl-and-reporting.md) | Adds/pull gating, retarget, priority damage |
+| [Repro](.agents/skills/raid-events/references/minimal-repros.md) | Воспроизводимая матрица и пакет артефактов |
+| [Источники и код](.agents/skills/raid-events/references/sources-and-code.md) | SHA, первоисточники, call chain, provenance |
+| [Проверка](.agents/skills/raid-events/references/validation.md) | Timeline, parsing, статистика, контроль результата |
+| [Реестр кода](.agents/skills/raid-events/references/source-audit-2026-10-06.md) | Проверенные места конкретного SimC commit |
+| [Примеры и инструменты](.agents/skills/raid-events/references/tools-and-examples.md) | Запуск, формат JSON, ограничения скриптов |
 
-============================================================
-2. ФОРМАТ ИТОГОВОГО ПРОФИЛЯ
-============================================================
+## Подключение skill
 
-Выдавай итоговый Raid Events профиль:
+Skill расположен в стандартном repo-scoped каталоге .agents/skills/raid-events. Открой этот репозиторий в Codex и вызови $raid-events. Для другого проекта скопируй **всю** папку raid-events в его .agents/skills, включая references, scripts и assets. Перенос одного SKILL.md потеряет методичку и инструменты.
 
-- одним непрерывным SimC code block;
-- с русскими комментариями;
-- разбитым по Pull 1, Pull 2, Pull 3 и т.д.;
-- каждый pull должен быть визуально отделён;
-- имена мобов должны иметь суффикс номера пулла, чтобы одинаковые NPC из разных пуллов не путались.
+Актуальная схема обнаружения описана в [официальной документации](https://learn.chatgpt.com/docs/build-skills). Папка skills в старых предложениях структуры была упаковочным примером; здесь выбран непосредственно обнаруживаемый каталог без дублирующих копий.
 
-Пример:
+Пример запроса: «Используй $raid-events: восстанови окна целей по этому логу; отметь неопределённые lifetime; сформируй таблицу и профиль; проверь Guillotine отдельно».
 
-# ============================================================
-# PULL 6
-# ============================================================
+## Инструменты
 
-raid_events+=/adds,...
+Python 3.10+, стандартная библиотека, без сетевых запросов:
 
-============================================================
-3. БАЗОВЫЕ НАСТРОЙКИ
-============================================================
+~~~text
+python .agents/skills/raid-events/scripts/compare_results.py .agents/skills/raid-events/assets/guillotine-observations.json
+python .agents/skills/raid-events/scripts/build_route.py .agents/skills/raid-events/assets/example-timeline.json --output route.simc
+python .agents/skills/raid-events/scripts/extract_action.py report.json --player YOUR_PLAYER --action perfected_guillotine --label baseline --output baseline.json
+python .agents/skills/raid-events/scripts/check_repository.py
+python -m unittest discover -s .agents/skills/raid-events/scripts/tests -v
+~~~
 
-Использовать:
+Генератор принимает уже реконструированные lifetimes, не угадывает маршрут из сырого лога. Примеры — учебные encounter overlays: к ним нужен реальный player profile. Historical Guillotine experiment не воспроизведён здесь: исходные профили, бинарник, seed и отчёты не предоставлены.
 
-fixed_time=1
+## Границы наполнения
 
-max_time=<реальная длительность маршрута>
+Сохранены весь текущий README, предоставленные численные находки и релевантный контекст доступного чата. Добавлены воспроизводимые процедуры и проверка текущего кода. Недоступные прошлые исследования не восстановлены по памяти. Проверка текущего кода датирована 2026-10-06 и привязана к SHA; её нельзя задним числом считать доказательством причины старого эксперимента.
 
-vary_combat_length=0
-
-ignore_invulnerable_targets=1
-
-strict_parsing=1
-
-Базовый dummy должен быть полностью invulnerable весь маршрут:
-
-raid_events=/invulnerable,cooldown=5160,duration=5160,retarget=1
-
-5160 используется как безопасный cooldown для одноразовых обычных событий,
-если событие не должно повторяться.
-
-Для обычных /adds:
-
-duration_stddev=1
-
-если нет причины использовать другое значение.
-
-============================================================
-4. КАК МОДЕЛИРОВАТЬ МОБОВ
-============================================================
-
-Обычные trash mobs:
-
-raid_events+=/adds,...
-
-НЕ использовать type=add_boss.
-
-Boss / boss-like targets:
-
-raid_events+=/adds,...,type=add_boss
-
-type=add_boss использовать только на настоящих boss targets,
-а не на обычном trash.
-
-Если несколько мобов одного типа реально появляются одновременно,
-их можно группировать через count=.
-
-Если они появляются волнами или имеют разные времена жизни —
-создавать отдельные события.
-
-Не пытаться насильно объединять в один add targets,
-которые в логе имеют существенно разные времена появления/смерти.
-
-============================================================
-5. SPAWNED ADDS И МЕХАНИКИ
-============================================================
-
-Обязательно учитывать spawned mobs, которых нет в MDT,
-если игрок реально может/должен наносить им урон.
-
-Особенно учитывать:
-
-- boss adds;
-- Healing Tide Totem и аналогичные priority targets;
-- Council totems;
-- Animated Gold;
-- Half-Finished Mummies;
-- Minions;
-- любые другие реально атакуемые spawned targets.
-
-Не добавлять механики, которые игрок как танк реально не атакует.
-
-Пример:
-если Mchimba coffin механика не применяется к танку,
-не моделировать coffin как DPS target только потому,
-что он существует в DungeonRoute.
-
-============================================================
-6. BOSSES И PHASE STRUCTURE
-============================================================
-
-Boss phases строить по combat log,
-а не просто запускать всех boss-related targets одновременно.
-
-Если boss/add появляется на определённом HP-phase,
-использовать реальный timestamp появления из лога.
-
-Не предполагать, что следующий phase начинается в момент смерти предыдущего add,
-если лог показывает другое.
-
-Пример принципа:
-
-Boss A:
-t=1620–1840
-
-Add B:
-t=1628–1672
-
-Boss alone:
-t=1672–1714
-
-Add/Phase C:
-t=1714–1840
-
-Нужно сохранять именно такую структуру,
-а не превращать это в три цели с t=1620.
-
-============================================================
-7. INVULNERABILITY И НЕДОСТУПНОСТЬ ЦЕЛИ
-============================================================
-
-НЕ использовать /invulnerable для boss phases,
-если важно сохранять debuffs / dots на цели.
-
-Причина:
-начало /invulnerable может очищать target debuffs/dots
-и менять поведение APL.
-
-Если цель просто временно недоступна,
-сначала искать способ смоделировать это через структуру событий,
-а не через очистку target state.
-
-НЕ использовать /stun как замену недоступности цели:
-raid_event /stun применяется к игроку и моделирует stun игрока,
-а не target downtime.
-
-============================================================
-8. BLOODLUST
-============================================================
-
-Отключить автоматический BL:
-
-override.bloodlust=0
-
-И задавать Bloodlust напрямую по реальным timestamps:
-
-raid_events+=/buff,buff_name=bloodlust,duration=40,timestamps=<...>
-
-Bloodlust должен быть привязан к абсолютному времени из combat log,
-а не автоматически к началу pull.
-
-Это важно, потому что в health-driven DungeonRoute абсолютное время BL
-может сдвигаться вместе со скоростью убийства предыдущих пуллов.
-
-============================================================
-9. CHAIN PULLS
-============================================================
-
-Если два pull частично перекрываются по времени,
-не считать одно и то же событие дважды.
-
-Для разбора chain pull использовать:
-
-- NPC ID;
-- GUID конкретного spawn;
-- timestamp;
-- принадлежность конкретных целей к пуллу.
-
-Не сегментировать только по временным окнам,
-если окна пересекаются.
-
-============================================================
-10. HEALTH В RAID EVENTS
-============================================================
-
-Помнить фундаментальное ограничение SimulationCraft:
-
-/adds с duration — time-driven targets.
-
-Их health percentage фактически синтезируется из оставшейся длительности:
-
-HP% ~ remaining_duration / total_duration
-
-Поэтому:
-
-- дополнительный урон игрока НЕ сокращает жизнь add;
-- execute effects могут видеть искусственный HP%;
-- damage-dependent TTK feedback отсутствует.
-
-Это особенно важно для предметов,
-урон которых зависит от % HP цели,
-например Zul'jin's Guillotine Technique.
-
-Не интерпретировать Raid Events как настоящий health-driven combat.
-
-============================================================
-11. DUNGEONROUTE VS RAID EVENTS
-============================================================
-
-Помнить:
-
-DungeonRoute /pull:
-- имеет настоящее HP;
-- цели умирают от нанесённого урона;
-- дополнительный DPS сокращает pull;
-- следующий pull начинается раньше;
-- весь маршрут может ускоряться.
-
-Raid Events /adds:
-- длительность цели фиксирована;
-- дополнительный DPS не сокращает target lifetime;
-- реальный таймлайн сохраняется.
-
-Для реального M+ neither model is perfect.
-
-DungeonRoute может сильно переоценивать TTK-feedback,
-потому что весь HP пачки фактически снимает один симулируемый персонаж,
-хотя в реальном ключе он наносит только часть group damage.
-
-Raid Events, наоборот, полностью убирает marginal TTK-feedback игрока.
-
-При сравнении DPS предметов учитывать это отдельно.
-
-============================================================
-12. APL И raid_event
-============================================================
-
-Проверять APL на условия вида:
-
-raid_event.adds.up
-raid_event.adds.remains
-raid_event.adds.in
-
-Если профиль запускается как DungeonRoute,
-такие условия могут работать иначе,
-потому что encounter использует raid_event.pull.
-
-SimulationCraft поддерживает:
-
-raid_event.pull.exists
-raid_event.pull.in
-raid_event.pull.remains
-
-Для cooldown gating в DungeonRoute
-использовать pull.remains там, где это уместно.
-
-Пример идеи для Berserk:
-
-actions.cooldowns+=/berserk,if=...&
-((fight_style.dungeonroute&raid_event.pull.remains>=15)|
-(!fight_style.dungeonroute&(!raid_event.adds.up|raid_event.adds.remains>=15)))
-
-Если сравниваются DungeonRoute и Raid Events,
-APL должен быть максимально симметричным между ними.
-
-============================================================
-13. TARGETING
-============================================================
-
-Для DungeonRoute / сложных multi-target маршрутов учитывать retarget:
-
-actions=retarget,target_if=max:target.health,line_cd=5
-
-Если сравниваются два encounter styles,
-желательно использовать одинаковую targeting logic,
-если нет причины делать иначе.
-
-merge_enemy_priority_dmg=1
-
-можно использовать для удобства отчёта,
-но это НЕ заставляет персонажа реально выбирать priority target.
-
-============================================================
-14. КАК РАЗБИРАТЬ COMBAT LOG
-============================================================
-
-Сначала найти:
-
-CHALLENGE_MODE_START
-CHALLENGE_MODE_END
-
-Затем определить пять игроков группы.
-
-Для каждого pull:
-
-- первое боевое взаимодействие;
-- последний death/damage event;
-- NPC IDs;
-- GUID каждого spawn;
-- число одновременно активных целей;
-- spawned adds;
-- boss phase transitions;
-- priority targets;
-- Bloodlust;
-- длинные forced downtime;
-- target swaps.
-
-Особое внимание:
-не только SPELL_CAST_SUCCESS,
-а именно появлению целей и фактическому damage по ним.
-
-============================================================
-15. ЧТО НУЖНО ВЫДАТЬ ПЕРЕД ФИНАЛЬНЫМ КОДОМ
-============================================================
-
-Перед генерацией итогового профиля сначала составить таблицу:
-
-Pull
-Start
-End
-Duration
-Initial mobs
-Spawned mobs
-Boss/Trash
-Особые механики
-BL
-Примечания/неопределённости
-
-После проверки этой таблицы уже строить Raid Events код.
-
-Если данных достаточно и пользователь не просит промежуточное согласование,
-можно сразу построить код,
-но всё равно внутренне сначала реконструировать таблицу.
-
-============================================================
-16. ПРОВЕРКА ГОТОВОГО ROUTE
-============================================================
-
-Перед выдачей проверить:
-
-- число пуллов совпадает с реальным маршрутом;
-- нет двойного счёта mobs;
-- нет забытых spawned adds;
-- boss phases не стартуют раньше реальности;
-- BL стоит на правильных абсолютных timestamps;
-- обычные mobs не получили type=add_boss;
-- bosses получили type=add_boss;
-- duration соответствует реальному времени жизни цели;
-- duration_stddev=1 там, где требуется;
-- одноразовые events не повторяются;
-- базовый dummy invulnerable;
-- нет /stun вместо target downtime;
-- нет /invulnerable там, где он ломает dot/debuff continuity;
-- APL не содержит очевидной несовместимости с encounter style.
-
-============================================================
-17. ЦЕЛЬ МОДЕЛИ
-============================================================
-
-Цель не в том, чтобы получить максимальную похожесть на стандартный DungeonRoute.
-
-Цель:
-как можно точнее воспроизвести реальный target timeline конкретного ключа,
-чтобы сравнивать:
-
-- gear;
-- trinkets;
-- talents;
-- cooldown timings;
-- damage distribution;
-- priority damage;
-
-при тех же target windows,
-которые реально были у группы.
+[Происхождение материалов и отсутствующие артефакты](source/provenance.md). [Запись выполненных проверок](source/validation-record.md). Новые исследования добавляй отдельными case studies со своими версиями, профилями и evidence.

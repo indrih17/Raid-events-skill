@@ -1,0 +1,4 @@
+__pycache__/
+*.py[cod]
+# Generated simulation artifacts belong in per-investigation archives, not the skill.
+work/
