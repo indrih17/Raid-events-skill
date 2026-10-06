@@ -25,6 +25,7 @@
 |---|---|
 | [SKILL.md](.agents/skills/raid-events/SKILL.md) | Короткий рабочий алгоритм и выбор нужной главы |
 | [AGENTS.md](AGENTS.md) | Правила сопровождения этого репозитория |
+| [Сопровождение базы](.agents/skills/raid-events/references/knowledge-maintenance.md) | Самостоятельное сохранение проверенных находок, исправления и публикация в main |
 | [Методология](.agents/skills/raid-events/references/methodology.md) | От вопроса до проверяемого вывода |
 | [Доказательства](.agents/skills/raid-events/references/evidence-rules.md) | Границы вывода, статистика, альтернативы |
 | [Combat log](.agents/skills/raid-events/references/combat-log-reconstruction.md) | GUID, пуллы, spawned adds, фазы, BL |

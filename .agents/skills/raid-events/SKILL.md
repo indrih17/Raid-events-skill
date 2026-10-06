@@ -18,6 +18,7 @@ description: Reconstruct M+ target timelines from combat logs and MDT, build Sim
 - Общий алгоритм: [methodology](references/methodology.md).
 - Практический пример: [Perfected Guillotine](references/case-studies/perfected-guillotine-invulnerable.md).
 - Автоматизация и форматы: [tools-and-examples](references/tools-and-examples.md).
+- Сохранение находок и исправление базы: [knowledge-maintenance](references/knowledge-maintenance.md).
 
 Читай только главы, нужные для задачи. Skill переносится всей папкой вместе с resources.
 
@@ -30,6 +31,7 @@ description: Reconstruct M+ target timelines from combat logs and MDT, build Sim
 5. Сравни execution/direct/tick results, damage, per-target results, active time и trigger rate. Проверь единицы, owner и aggregation. Ratio of means не выдавай за mean per-proc ratio.
 6. Сопоставь эксперимент с кодом и альтернативами. Присвой каждой формулировке уровень доказательности.
 7. Выдай вывод, границы, профиль/команду, таблицу метрик, ссылки на код по SHA и следующий различающий эксперимент, если причина не установлена.
+8. При новом проверенном выводе или опровержении самостоятельно обнови базу по [правилам сопровождения](references/knowledge-maintenance.md), проверь изменения и опубликуй их в разрешённый репозиторий. Если полезного нового знания нет, не создавай запись ради записи.
 
 ## Инварианты
 
@@ -42,7 +44,7 @@ description: Reconstruct M+ target timelines from combat logs and MDT, build Sim
 - Не делай вывод из одного DPS. num_executes и num_direct_results требуют проверки semantics соответствующей action.
 - Guillotine historical observation: 43.662/87.184/10.534M baseline; 43.719/43.643/5.200M с invulnerable. Примерно 1.997 → 0.998 results/execution. Доказано изменение зарегистрированных попаданий в предоставленных данных; точная причина отдельно не доказана.
 - Не утверждай, что «добавление invulnerable всегда ломает AoE» или что «ignore_invulnerable_targets гарантированно исправляет любой proc».
-- Публикация/commit и любые внешние изменения выполняются только в пределах текущей задачи пользователя.
+- Для базы indrih17/Raid-events-skill пользователь разрешил самостоятельные commit/push в main по итогам совместных исследований. Это разрешение не распространяется на другие репозитории, внешние сервисы или публикацию личных исходных логов.
 
 ## Формат результата
 
