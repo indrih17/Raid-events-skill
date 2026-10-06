@@ -49,3 +49,11 @@
 ## Новые материалы
 
 Процедуры, контроли, шаблоны и scripts написаны для этого репозитория. Source audit основан на чтении первичного SimC C++ по SHA cafc27227ec08760cb391d6a798e104435c29a87. Все generated examples обозначены учебными. Запуски инструментов проверки не являются запуском SimulationCraft.
+
+## Адаптация Warcraft CLI (2026-10-06)
+
+По запросу пользователя изучен aurokin/warcraft_cli на SHA dd77084311d169b812c5a3884c8441e595306aae (package 0.6.0). В references/warcraft-cli.md, warcraft-content.md, warcraft-logs.md и warcraft-simulation.md добавлена самостоятельная русская адаптация workflow Wowhead, Warcraft Wiki, WCL, Method/Icy Veins, Raider.IO, Lorrgs, Blizzard, CurseForge, SimC и Raidbots. Ссылки ведут на фиксированный SHA; исходный сторонний skill и код не скопированы в базу целиком. В проверенном дереве upstream файл лицензии не обнаружен; установка внешней зависимости не означает её перелицензирование или публикацию здесь.
+
+Локально установлен pinned CLI в исключённое из Git окружение .warcraft-runtime внутри skill; assets/warcraft-cli-requirements.txt фиксирует установленный набор dependencies. Проверены doctor wrapper, provider help, live Wowhead spell 10060 и Wiki COMBAT_LOG_EVENT_UNFILTERED. Smoke-запросы успешны после добавления tzdata 2026.5 и PYTHONUTF8=1: первоначально Windows не имел America/Chicago timezone data, а вывод Wiki не помещался в console encoding. Upstream baseline не изменён. WCL API report extraction и SimC engine runs не проверены live; установленный Python wrapper сам по себе не обеспечивает OAuth или engine binary. Эти ограничения отражены в references. Проверка repository и 24 существующих unittest успешны.
+
+Материалы не заменяют нашу evidence hierarchy: Wowhead comments/guide recommendations остаются свидетельствами или гипотезами, статический APL analysis не становится simulated, WCL summaries не доказывают lifetime, pagination/partial errors и actor identity требуют отдельной проверки. В отличие от upstream общего совета не вводится универсальное правило точности 1000/5000 iterations или статистическое правило сравнения по одному mean_error. source/original-methodology.md сохранён без изменений.

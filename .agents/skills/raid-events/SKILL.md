@@ -1,6 +1,6 @@
 ---
 name: raid-events
-description: Reconstruct M+ target timelines from combat logs and MDT, build SimulationCraft raid events, and investigate proc targeting, invulnerability, RPPM, haste, and unexpected damage results.
+description: Reconstruct M+ target timelines, build SimulationCraft raid events, investigate proc mechanics, and research WoW spells, items, API documentation, guides and reports using Wowhead, Warcraft Wiki, Warcraft Logs and local Warcraft CLI tools.
 ---
 
 # Raid Events / SimC investigator
@@ -18,6 +18,7 @@ description: Reconstruct M+ target timelines from combat logs and MDT, build Sim
 - Общий алгоритм: [methodology](references/methodology.md).
 - Практический пример: [Perfected Guillotine](references/case-studies/perfected-guillotine-invulnerable.md).
 - Автоматизация и форматы: [tools-and-examples](references/tools-and-examples.md).
+- Внешние WoW-источники и локальный CLI: [warcraft-cli](references/warcraft-cli.md). Wowhead/вики/гайды: [content](references/warcraft-content.md); WCL и M+ события: [logs](references/warcraft-logs.md); SimC/Raidbots/таланты: [simulation](references/warcraft-simulation.md).
 - Сохранение находок и исправление базы: [knowledge-maintenance](references/knowledge-maintenance.md).
 
 Читай только главы, нужные для задачи. Skill переносится всей папкой вместе с resources.
