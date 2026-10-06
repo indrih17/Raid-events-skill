@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "status": "synthetic teaching example, not a real route",
+  "duration": 300,
+  "bloodlust": [
+    60
+  ],
+  "targets": [
+    {
+      "guid": "EXAMPLE-SPAWN-1",
+      "npc_id": null,
+      "name": "TrashA",
+      "pull": 1,
+      "start": 5,
+      "end": 35,
+      "kind": "trash",
+      "origin": "initial",
+      "confidence": "estimated",
+      "evidence": "Synthetic lifetime; not a combat log"
+    },
+    {
+      "guid": "EXAMPLE-SPAWN-2",
+      "npc_id": null,
+      "name": "TrashB",
+      "pull": 1,
+      "start": 5,
+      "end": 37,
+      "kind": "trash",
+      "origin": "initial",
+      "confidence": "estimated",
+      "evidence": "Synthetic distinct death; separate event"
+    },
+    {
+      "guid": "EXAMPLE-SPAWN-3",
+      "npc_id": null,
+      "name": "Totem",
+      "pull": 1,
+      "start": 14,
+      "end": 22,
+      "kind": "trash",
+      "origin": "spawned",
+      "confidence": "estimated",
+      "evidence": "Synthetic spawned priority target; APL configured separately"
+    },
+    {
+      "guid": "EXAMPLE-SPAWN-4",
+      "npc_id": null,
+      "name": "Boss",
+      "pull": 2,
+      "start": 50,
+      "end": 170,
+      "kind": "boss",
+      "origin": "initial",
+      "confidence": "estimated",
+      "evidence": "Synthetic boss window"
+    },
+    {
+      "guid": "EXAMPLE-SPAWN-5",
+      "npc_id": null,
+      "name": "PhaseAdd",
+      "pull": 2,
+      "start": 80,
+      "end": 105,
+      "kind": "trash",
+      "origin": "spawned",
+      "confidence": "estimated",
+      "evidence": "Synthetic phase window within boss lifetime"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "synthetic arithmetic fixture; fictional action, not a simulation result",
+  "cases": [
+    {
+      "label": "baseline",
+      "action": "example_action",
+      "owner": "Player",
+      "num_executes": 20,
+      "num_direct_results": 40,
+      "damage": 10000,
+      "damage_scope": "synthetic_direct"
+    },
+    {
+      "label": "variant",
+      "action": "example_action",
+      "owner": "Player",
+      "num_executes": 20,
+      "num_direct_results": 20,
+      "damage": 5000,
+      "damage_scope": "synthetic_direct"
+    }
+  ]
+}

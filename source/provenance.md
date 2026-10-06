@@ -1,59 +1,31 @@
-# Происхождение и сохранение материалов
+# Provenance and source preservation
 
-## Исходный README
+## Original methodology
 
-- Repository: indrih17/Raid-events-skill.
-- Прочитан из main 2026-10-06.
-- Исходный commit: e453c502fa3287296e73e898bd9c706fce614d2c.
-- Git blob SHA README: 248e16dfa99740f6ac6a25f2a3f11491cf553df1.
-- [Исходная версия](https://github.com/indrih17/Raid-events-skill/blob/e453c502fa3287296e73e898bd9c706fce614d2c/README.md).
-- Содержимое сохранено целиком в original-methodology.md; новая методичка не заменяет архив.
+Repository: indrih17/Raid-events-skill. Original main was read on 2026-10-06 at commit `e453c502fa3287296e73e898bd9c706fce614d2c`. Original README Git blob: `248e16dfa99740f6ac6a25f2a3f11491cf553df1`. Its full Russian text is preserved byte-for-byte in [original-methodology.md](original-methodology.md). [Original version](https://github.com/indrih17/Raid-events-skill/blob/e453c502fa3287296e73e898bd9c706fce614d2c/README.md).
 
-## Доступный контекст
+The accessible chat “Скиллы и агенты Codex”, conversation ID `6ac46703-e464-83ed-8cf1-e4969a8d3aef`, discussed packaging and migration, not full raw experiment reports. No unavailable research history, player profiles, binaries, seeds or reports was reconstructed by assumption. A linked Gist was not counted as independent evidence for the same README.
 
-Прочитан доступный чат «Скиллы и агенты Codex», conversation ID 6ac46703-e464-83ed-8cf1-e4969a8d3aef. Он содержит обсуждение структуры skill и переноса материала, но не сырые отчёты Guillotine. Числа эксперимента взяты из текущего прямого запроса пользователя и сохранены отдельно как historical observation.
+The original 17 sections informed the reusable chapters: reconstruction, event modeling, model limitations, APL/reporting, source research and validation. Some original examples are historical and do not define the current skill's scope. The original archive remains Russian by preservation requirement; current user-facing documentation is English.
 
-Связанный Gist не использован как дополнительное независимое доказательство: текущий README уже предоставлен в репозитории как исходный материал. Недоступные исследования из других чатов, полные combat logs, исходный gear profile, бинарник SimC, seed, iteration count и JSON/HTML отчёты не предоставлены. Их параметры не восстановлены предположениями.
+## Source and tool checks
 
-## Где сохранены все 17 исходных разделов
+The dated SimC source audit uses SHA `cafc27227ec08760cb391d6a798e104435c29a87`. It records source facts, not a matching historical binary or game-behavior validation. Generated inputs are teaching overlays; Python checks are not SimulationCraft runs.
 
-| № | Исходная тема | Новая глава в references |
-|---|---|---|
-| 1 | Реальный timeline / источники | combat-log-reconstruction, sources-and-code |
-| 2 | Итоговый code block / Pull naming | event-modeling |
-| 3 | Базовые настройки / dummy / 5160 | event-modeling, validation |
-| 4 | Trash, add_boss, count | event-modeling |
-| 5 | Spawned adds / роль игрока | combat-log-reconstruction |
-| 6 | Boss phases | combat-log-reconstruction, event-modeling |
-| 7 | Invulnerable / stun | invulnerable-actors |
-| 8 | Bloodlust timestamps | event-modeling, rppm-haste |
-| 9 | Chain pulls / GUID | combat-log-reconstruction |
-| 10 | Synthetic HP / duration | model-limitations |
-| 11 | DungeonRoute vs Raid Events | model-limitations |
-| 12 | APL adds/pull expressions | apl-and-reporting |
-| 13 | Retarget / priority reporting | target-selection, apl-and-reporting |
-| 14 | Разбор combat log | combat-log-reconstruction |
-| 15 | Таблица перед кодом | combat-log-reconstruction, validation |
-| 16 | Проверка route | validation |
-| 17 | Gear/talents/CD/distribution | methodology, model-limitations |
+Duration_stddev=1 remains the approximate route default; exact diagnostics use fixed bounds. The original cooldown=5160 convention is not universal, so the generator uses finite timestamp starts and a route-length-aware cooldown. Counter semantics require owner/result/aggregation checks.
 
-## Уточнения без переписывания истории
+## Warcraft CLI adaptation
 
-1. duration_stddev=1 сохраняется как авторский route default. Это jitter, поэтому «реальный timeline» означает приближение; строгий тест фиксирует duration_min/max.
-2. cooldown=5160 сохраняется как исходная конвенция для маршрута короче выбранного интервала. Генератор использует конечный timestamps-список, чтобы одноразовость не зависела от длительности ключа.
-3. Новая проверка кода подтверждает clear_debuffs и synthetic HP в конкретном SHA; это не доказательство версии исторического эксперимента.
-4. Разница 43.662 → 43.719 невелика, но без dispersions нельзя доказать равенство proc rates статистически.
-5. Direct results в агрегате требуют проверки result categories; слово «попадания» в historical case не превращает любую direct-results строку в successful damaging hits.
-6. Текущая стандартная repo discovery папка — .agents/skills. Весь skill расположен там, без двух расходящихся копий.
+On 2026-10-06 the owner requested useful workflows from aurokin/warcraft_cli. Audited SHA: `dd77084311d169b812c5a3884c8441e595306aae`, package 0.6.0. The content, logs and simulation references adapt its interfaces with SHA links. Upstream source/skill was not republished wholesale. No license file was found in the reviewed upstream tree; external installation does not relicense it.
 
-## Новые материалы
+Pinned CLI dependencies are recorded in the skill's assets. The ignored local environment was installed separately. Wrapper/provider interface checks and live Wowhead spell 10060 and Wiki COMBAT_LOG_EVENT_UNFILTERED reads succeeded after adding tzdata 2026.5 and enabling Python UTF-8 on Windows. WCL credentials and configured SimC engine were absent; report extraction and simulations were not validated. The adaptation was published in commit `4bb65ace0219137c0766499b151d77852bfd1dc3`.
 
-Процедуры, контроли, шаблоны и scripts написаны для этого репозитория. Source audit основан на чтении первичного SimC C++ по SHA cafc27227ec08760cb391d6a798e104435c29a87. Все generated examples обозначены учебными. Запуски инструментов проверки не являются запуском SimulationCraft.
+Source text, guides and comments remain distinct from code/runtime evidence. Static APL analysis is not a simulation; WCL summaries do not prove lifetimes and pagination must be checked.
 
-## Адаптация Warcraft CLI (2026-10-06)
+## English scope revision and rename
 
-По запросу пользователя изучен aurokin/warcraft_cli на SHA dd77084311d169b812c5a3884c8441e595306aae (package 0.6.0). В references/warcraft-cli.md, warcraft-content.md, warcraft-logs.md и warcraft-simulation.md добавлена самостоятельная русская адаптация workflow Wowhead, Warcraft Wiki, WCL, Method/Icy Veins, Raider.IO, Lorrgs, Blizzard, CurseForge, SimC и Raidbots. Ссылки ведут на фиксированный SHA; исходный сторонний skill и код не скопированы в базу целиком. В проверенном дереве upstream файл лицензии не обнаружен; установка внешней зависимости не означает её перелицензирование или публикацию здесь.
+Later on 2026-10-06 the owner requested an English public skill with WoW in its name, removing Guillotine, invulnerable and haste/RPPM investigations because they were exploratory personal questions. The active skill is now `wow-raid-events`; README, references, templates, generated comments and paths were updated.
 
-Локально установлен pinned CLI в исключённое из Git окружение .warcraft-runtime внутри skill; assets/warcraft-cli-requirements.txt фиксирует установленный набор dependencies. Проверены doctor wrapper, provider help, live Wowhead spell 10060 и Wiki COMBAT_LOG_EVENT_UNFILTERED. Smoke-запросы успешны после добавления tzdata 2026.5 и PYTHONUTF8=1: первоначально Windows не имел America/Chicago timezone data, а вывод Wiki не помещался в console encoding. Upstream baseline не изменён. WCL API report extraction и SimC engine runs не проверены live; установленный Python wrapper сам по себе не обеспечивает OAuth или engine binary. Эти ограничения отражены в references. Проверка repository и 24 существующих unittest успешны.
+Dedicated investigation chapters, case study, historical numeric fixture and focused reproduction overlays were removed from the distributed skill. Their prior contents remain in Git history, including commit `4bb65ace0219137c0766499b151d77852bfd1dc3`; removal is a scope decision, not a claim that the observations were disproved. Generic comparison/extraction tests now use clearly synthetic fictional actions and values, without altering historical results. General route infrastructure remains in the generator because removing it would change the encounter model; it is not presented as a separate mechanism investigation.
 
-Материалы не заменяют нашу evidence hierarchy: Wowhead comments/guide recommendations остаются свидетельствами или гипотезами, статический APL analysis не становится simulated, WCL summaries не доказывают lifetime, pagination/partial errors и actor identity требуют отдельной проверки. В отличие от upstream общего совета не вводится универсальное правило точности 1000/5000 iterations или статистическое правило сравнения по одному mean_error. source/original-methodology.md сохранён без изменений.
+The original archive is unchanged. Reusable evidence, target-selection, model and validation guidance remains. Repository publication permission stays scoped to the owner's base rather than becoming permission for users who copy the skill.

@@ -1,71 +1,47 @@
-# Raid Events и SimulationCraft: исследовательская методичка
+# WoW Raid Events
 
-Практическое руководство по восстановлению M+ target timeline из combat log и MDT, проверке реализации SimC и сравнению экипировки, эффектов и APL. Здесь одновременно находятся подробная методичка для человека и переносимый Codex skill.
+A portable Codex skill for World of Warcraft Mythic+ encounter reconstruction and SimulationCraft research. Build target timelines from combat logs, use MDT to contextualize planned pulls, generate raid-event overlays, and validate model assumptions before comparing results.
 
-## С чего начать
+The skill also provides workflows for Wowhead, Warcraft Wiki, Warcraft Logs, guides, Raider.IO, Lorrgs, local SimC and shared Raidbots reports. These tools retrieve source data on demand; this repository is not a local WoW database.
 
-1. Для маршрута: [восстановление лога](.agents/skills/raid-events/references/combat-log-reconstruction.md), затем [моделирование событий](.agents/skills/raid-events/references/event-modeling.md) и [проверка профиля](.agents/skills/raid-events/references/validation.md).
-2. Для странного proc: [методология](.agents/skills/raid-events/references/methodology.md), [уровни доказательности](.agents/skills/raid-events/references/evidence-rules.md), [target selection](.agents/skills/raid-events/references/target-selection.md).
-3. Для Guillotine: [разбор эксперимента](.agents/skills/raid-events/references/case-studies/perfected-guillotine-invulnerable.md).
-4. Для haste/RPPM: [отдельная глава](.agents/skills/raid-events/references/rppm-haste.md).
-5. Для исходных правил: [полная неизменённая копия README](source/original-methodology.md) и [карта сохранения всех 17 разделов](source/provenance.md).
+## Start here
 
-## Главные выводы
+- Reconstruct a route: [combat logs](.agents/skills/wow-raid-events/references/combat-log-reconstruction.md), [event modeling](.agents/skills/wow-raid-events/references/event-modeling.md), [validation](.agents/skills/wow-raid-events/references/validation.md).
+- Choose a model: [fixed windows versus health-driven routes](.agents/skills/wow-raid-events/references/model-limitations.md).
+- Research WoW data: [CLI setup](.agents/skills/wow-raid-events/references/warcraft-cli.md), [Wowhead/Wiki/guides](.agents/skills/wow-raid-events/references/warcraft-content.md), [WCL events](.agents/skills/wow-raid-events/references/warcraft-logs.md).
+- Inspect simulations: [SimC/Raidbots](.agents/skills/wow-raid-events/references/warcraft-simulation.md), [APL/reporting](.agents/skills/wow-raid-events/references/apl-and-reporting.md).
+- Check a conclusion: [evidence rules](.agents/skills/wow-raid-events/references/evidence-rules.md), [reproductions](.agents/skills/wow-raid-events/references/minimal-repros.md), [source provenance](.agents/skills/wow-raid-events/references/sources-and-code.md).
 
-- Combat log задаёт наблюдаемый таймлайн; MDT помогает определить начальный состав. DungeonRoute не заменяет фактические данные.
-- Обычные duration-based adds сохраняют окна жизни, но их HP% синтетический; увеличение DPS не моделирует полноценный вклад игрока в сокращение TTK группы.
-- Invulnerable actor нельзя считать безвредной декорацией: нужно проверять debuffs, target lists, retarget и каждый proc.
-- В эксперименте Perfected Guillotine baseline: 43.662 executions, 87.184 direct results, 10.534M среднего урона. С invulnerable: 43.719, 43.643, 5.200M. Получается примерно 1.997 и 0.998 зарегистрированных direct results на execution.
-- Эти данные доказывают изменение числа зарегистрированных попаданий в предоставленном эксперименте. Они сами по себе не доказывают точную причину, конкретную потерянную цель, ошибку target cap или поведение в игре.
-- DPS, proc attempts, successful procs, executions, direct results и damage — разные величины.
+[SKILL.md](.agents/skills/wow-raid-events/SKILL.md) routes the workflow; detailed chapters, scripts and examples live inside the same folder.
 
-## Содержание
+## Install and use
 
-| Материал | Назначение |
-|---|---|
-| [SKILL.md](.agents/skills/raid-events/SKILL.md) | Короткий рабочий алгоритм и выбор нужной главы |
-| [AGENTS.md](AGENTS.md) | Правила сопровождения этого репозитория |
-| [Сопровождение базы](.agents/skills/raid-events/references/knowledge-maintenance.md) | Самостоятельное сохранение проверенных находок, исправления и публикация в main |
-| [Методология](.agents/skills/raid-events/references/methodology.md) | От вопроса до проверяемого вывода |
-| [Доказательства](.agents/skills/raid-events/references/evidence-rules.md) | Границы вывода, статистика, альтернативы |
-| [Combat log](.agents/skills/raid-events/references/combat-log-reconstruction.md) | GUID, пуллы, spawned adds, фазы, BL |
-| [Raid events](.agents/skills/raid-events/references/event-modeling.md) | Duration, timestamps, dummy, разбиение событий |
-| [Выбор модели](.agents/skills/raid-events/references/model-limitations.md) | Time-driven и health-driven TTK, execute, party damage |
-| [Target selection](.agents/skills/raid-events/references/target-selection.md) | Callback → target list → cap → impact → stats |
-| [Invulnerable](.agents/skills/raid-events/references/invulnerable-actors.md) | Debuffs, lists, primary target, downtime |
-| [Proc debugging](.agents/skills/raid-events/references/proc-debugging.md) | Driver IDs, callbacks, дочерние actions |
-| [RPPM/haste](.agents/skills/raid-events/references/rppm-haste.md) | Масштабирование, BLP, attempts, контроль переменных |
-| [APL](.agents/skills/raid-events/references/apl-and-reporting.md) | Adds/pull gating, retarget, priority damage |
-| [Repro](.agents/skills/raid-events/references/minimal-repros.md) | Воспроизводимая матрица и пакет артефактов |
-| [Источники и код](.agents/skills/raid-events/references/sources-and-code.md) | SHA, первоисточники, call chain, provenance |
-| [Проверка](.agents/skills/raid-events/references/validation.md) | Timeline, parsing, статистика, контроль результата |
-| [Реестр кода](.agents/skills/raid-events/references/source-audit-2026-10-06.md) | Проверенные места конкретного SimC commit |
-| [Примеры и инструменты](.agents/skills/raid-events/references/tools-and-examples.md) | Запуск, формат JSON, ограничения скриптов |
+Open this repository in Codex and invoke `$wow-raid-events`. For another project, copy the **entire** `.agents/skills/wow-raid-events` folder into that project's `.agents/skills` directory. References, scripts and assets are required; copying only SKILL.md loses the supporting resources. The previous `$raid-events` name is replaced by `$wow-raid-events`.
 
-## Подключение skill
+Example request:
 
-Skill расположен в стандартном repo-scoped каталоге .agents/skills/raid-events. Открой этот репозиторий в Codex и вызови $raid-events. Для другого проекта скопируй **всю** папку raid-events в его .agents/skills, включая references, scripts и assets. Перенос одного SKILL.md потеряет методичку и инструменты.
+> Use $wow-raid-events to reconstruct target windows from this Mythic+ log. Identify chain pulls and spawned adds, mark uncertain lifetimes, and produce a pull table and SimulationCraft encounter overlay.
 
-Актуальная схема обнаружения описана в [официальной документации](https://learn.chatgpt.com/docs/build-skills). Папка skills в старых предложениях структуры была упаковочным примером; здесь выбран непосредственно обнаруживаемый каталог без дублирующих копий.
+Documentation and generated comments are English. The assistant can respond in the user's language.
 
-Пример запроса: «Используй $raid-events: восстанови окна целей по этому логу; отметь неопределённые lifetime; сформируй таблицу и профиль; проверь Guillotine отдельно».
+## Tools
 
-## Инструменты
+Offline tools need Python 3.10+ and the standard library:
 
-Python 3.10+, стандартная библиотека, без сетевых запросов:
+```text
+python .agents/skills/wow-raid-events/scripts/build_route.py .agents/skills/wow-raid-events/assets/example-timeline.json --exact --output route.simc
+python .agents/skills/wow-raid-events/scripts/compare_results.py .agents/skills/wow-raid-events/assets/example-comparison.json
+python .agents/skills/wow-raid-events/scripts/extract_action.py report.json --player YOUR_PLAYER --action YOUR_ACTION --label baseline --output baseline.json
+python .agents/skills/wow-raid-events/scripts/check_repository.py
+python -m unittest discover -s .agents/skills/wow-raid-events/scripts/tests -v
+```
 
-~~~text
-python .agents/skills/raid-events/scripts/compare_results.py .agents/skills/raid-events/assets/guillotine-observations.json
-python .agents/skills/raid-events/scripts/build_route.py .agents/skills/raid-events/assets/example-timeline.json --output route.simc
-python .agents/skills/raid-events/scripts/extract_action.py report.json --player YOUR_PLAYER --action perfected_guillotine --label baseline --output baseline.json
-python .agents/skills/raid-events/scripts/check_repository.py
-python -m unittest discover -s .agents/skills/raid-events/scripts/tests -v
-~~~
+The route generator consumes an already reconstructed spawn ledger; it does not infer a route from raw logs. Bundled data is explicitly synthetic. Generated overlays require a real player profile and compatible SimC engine validation.
 
-Генератор принимает уже реконструированные lifetimes, не угадывает маршрут из сырого лога. Примеры — учебные encounter overlays: к ним нужен реальный player profile. Historical Guillotine experiment не воспроизведён здесь: исходные профили, бинарник, seed и отчёты не предоставлены.
+The optional Warcraft CLI needs Python 3.12+ and dependencies. Follow [setup](.agents/skills/wow-raid-events/references/warcraft-cli.md). Recreate its ignored virtual environment after copying or moving the skill. WCL requires credentials and SimC runs require a configured engine binary; installing the CLI alone provides neither.
 
-## Границы наполнения
+## Evidence and maintenance
 
-Сохранены весь текущий README, предоставленные численные находки и релевантный контекст доступного чата. Добавлены воспроизводимые процедуры и проверка текущего кода. Недоступные прошлые исследования не восстановлены по памяти. Проверка текущего кода датирована 2026-10-06 и привязана к SHA; её нельзя задним числом считать доказательством причины старого эксперимента.
+Combat logs establish observations; MDT and route plans do not prove actual lifetimes. Fixed-window simulations do not automatically predict how extra player damage shortens group kill times. Keep units, owner, aggregation, versions and uncertainty explicit. Source reading, parsing checks and simulation runs have different verification status.
 
-[Происхождение материалов и отсутствующие артефакты](source/provenance.md). [Запись выполненных проверок](source/validation-record.md). Новые исследования добавляй отдельными case studies со своими версиями, профилями и evidence.
+See [repository rules](AGENTS.md), [maintenance scope](.agents/skills/wow-raid-events/references/knowledge-maintenance.md), [provenance](source/provenance.md) and [validation record](source/validation-record.md). The original Russian methodology is preserved unchanged in [source/original-methodology.md](source/original-methodology.md) as a historical archive, not the current skill entrypoint. Individual exploratory investigations removed from the active skill remain recoverable in Git history.
